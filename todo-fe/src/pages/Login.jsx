@@ -22,16 +22,16 @@ export default function Login() {
       localStorage.setItem("token", (await res).data.token);
       nav("/dashboard");
     } catch (err) {
-      if (err.response)
-        setError("Email hoặc mật khẩu không đúng");
-      else
-        setError("Đăng nhập thất bại");
+      if (err.response) setError(err.response.data.message);
+      else setError("Đăng nhập thất bại");
     }
   };
   return (
     <>
       <div className="h-screen">
-        <img src={`${process.env.PUBLIC_URL}/images/todo.jpg`} alt="Image" />
+        <div className="w-80 mx-auto">
+          <img src={`${process.env.PUBLIC_URL}/images/todo.jpg`} alt="Image" />
+        </div>
 
         <div className="flex justify-center items-center mt-8">
           <form className="p-4 rounded w-80">
@@ -67,7 +67,7 @@ export default function Login() {
               </a>
             </p>
             {error && (
-                <p className="text-red-500 text-center text-sm mt-2">{error}</p>
+              <p className="text-red-500 text-center text-sm mt-2">{error}</p>
             )}
           </form>
         </div>
