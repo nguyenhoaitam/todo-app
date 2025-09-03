@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 export const authMiddleware = (req, res, next) => {
     const token = req.header("Authorization")?.replace("Bearer ", "");
     if (!token) {
-        return res.status(401).json({message: "No token, auth denied"});
+        return res.status(401).json({message: "Không có token, xác thực thất bại"});
     }
 
     try {
@@ -11,6 +11,6 @@ export const authMiddleware = (req, res, next) => {
         req.user = decode.id;
         next();
     } catch (err) {
-        res.status(401).json({message: "Token invalid"});
+        res.status(401).json({message: "Token không hợp lệ"});
     }
 };

@@ -2,6 +2,7 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -17,8 +18,8 @@ router.post("/register", async (req, res) => {
     const existingUsername = await User.findOne({ username });
     const existingEmail = await User.findOne({ email });
 
-    if (!isValidEmail(email)){
-        return res.status(400).json({message: "Email không đúng định dạng"})
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: "Email không đúng định dạng" });
     }
 
     if (existingUsername) {
@@ -83,6 +84,38 @@ router.post("/login", async (req, res) => {
     res.json({ token });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/current-user", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user).select("-password");
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ err: err.message });
+  }
+});
+
+router.put("/current-user", authMiddleware, async (req, res) => {
+  try {
+    const {oldPass, newPass} = req.body;
+    const user = await User.findById(req.user);
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    const isMatch = await bcrypt.compare(oldPass, user.password);
+    if (!isMatch) {
+      return res.status(400).json({message: "Mật khẩu cũ không đúng"});
+    }
+
+    const hashed = await bcrypt.hash(newPass, 10);
+    user.password = hashed;
+    await user.save();
+
+    res.json("Cập nhật mật khẩu thành công");
+  } catch (err) {
+    res.status(500).json({ err: err.message });
   }
 });
 
