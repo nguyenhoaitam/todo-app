@@ -7,7 +7,7 @@ export default function () {
   return (
     <div className="fixed bottom-0 left-0 bg-primary w-full shadow-lg flex justify-around items-center py-2">
       <Link
-        to="/dasboard"
+        to="/dashboard"
         className={`flex flex-col items-center ${
           location.pathname === "/dashboard" ? "text-blue-900" : "text-gray"
         }`}

@@ -14,12 +14,63 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-router.get("/", authMiddleware, async (req, res) => {
+router.get("/all", authMiddleware, async (req, res) => {
   try {
     const tasks = await Task.find({ userId: req.user });
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/today", authMiddleware, async (req, res) => {
+  try {
+    const today = new Date();
+
+    const start = new Date(today.setHours(0, 0, 0, 0));
+    const end = new Date(today.setHours(23, 59, 59, 999));
+
+    const tasks = await Task.find({
+      userId: req.user,
+      deadline: { $gte: start, $lte: end},
+    });
+
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ err: err.message });
+  }
+});
+
+router.get("/overdue", authMiddleware, async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const tasks = await Task.find({
+      userId: req.user,
+      deadline: {$lt: today},
+      status: "todo" || "in-progress",
+    });
+
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ err: err.message });
+  }
+});
+
+router.get("/due", authMiddleware, async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const tasks = await Task.find({
+      userId: req.user,
+      deadline: {$gte: today},
+    });
+
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ err: err.message });
   }
 });
 

@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import BottomNav from "./components/BottomNav";
 import { AnimatePresence } from "framer-motion";
 import PageTransition from "./components/PageTransition";
+import TaskListPage from "./pages/TaskListPage";
 
 function AnimateRoutes() {
   const location = useLocation();
@@ -49,6 +50,7 @@ function AnimateRoutes() {
           }
         />
         <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="/tasks/:type" element={<TaskListPage/>} />
       </Routes>
     </AnimatePresence>
   );
